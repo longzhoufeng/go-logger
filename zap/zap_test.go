@@ -3,9 +3,8 @@ package zap
 import (
 	"fmt"
 	"github.com/longzhoufeng/go-core/debug/writer"
+	"github.com/longzhoufeng/go-logger"
 	"testing"
-
-	"github.com/longzhoufeng/go-logger/logger"
 )
 
 func TestName(t *testing.T) {
@@ -27,8 +26,8 @@ func TestLogf(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	logger.DefaultLogger = l
-	logger.Logf(logger.InfoLevel, "test logf: %s", "name")
+	go_logger.DefaultLogger = l
+	go_logger.Logf(go_logger.InfoLevel, "test logf: %s", "name")
 }
 
 func TestSetLevel(t *testing.T) {
@@ -36,23 +35,23 @@ func TestSetLevel(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	logger.DefaultLogger = l
+	go_logger.DefaultLogger = l
 
-	logger.Init(logger.WithLevel(logger.DebugLevel))
-	l.Logf(logger.DebugLevel, "test show debug: %s", "debug msg")
+	go_logger.Init(go_logger.WithLevel(go_logger.DebugLevel))
+	l.Logf(go_logger.DebugLevel, "test show debug: %s", "debug msg")
 
-	logger.Init(logger.WithLevel(logger.InfoLevel))
-	l.Logf(logger.DebugLevel, "test non-show debug: %s", "debug msg")
+	go_logger.Init(go_logger.WithLevel(go_logger.InfoLevel))
+	l.Logf(go_logger.DebugLevel, "test non-show debug: %s", "debug msg")
 }
 
 func TestWithReportCaller(t *testing.T) {
 	var err error
-	logger.DefaultLogger, err = NewLogger(WithCallerSkip(0))
+	go_logger.DefaultLogger, err = NewLogger(WithCallerSkip(0))
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	logger.Logf(logger.InfoLevel, "testing: %s", "WithReportCaller")
+	go_logger.Logf(go_logger.InfoLevel, "testing: %s", "WithReportCaller")
 }
 
 func TestFields(t *testing.T) {
@@ -60,10 +59,10 @@ func TestFields(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	logger.DefaultLogger = l.Fields(map[string]interface{}{
+	go_logger.DefaultLogger = l.Fields(map[string]interface{}{
 		"x-request-id": "123456abc",
 	})
-	logger.DefaultLogger.Log(logger.InfoLevel, "hello")
+	go_logger.DefaultLogger.Log(go_logger.InfoLevel, "hello")
 }
 
 func TestFile(t *testing.T) {
@@ -72,13 +71,13 @@ func TestFile(t *testing.T) {
 		t.Errorf("logger setup error: %s", err.Error())
 	}
 	//var err error
-	logger.DefaultLogger, err = NewLogger(logger.WithLevel(logger.TraceLevel), WithOutput(outFileWriter))
+	go_logger.DefaultLogger, err = NewLogger(go_logger.WithLevel(go_logger.TraceLevel), WithOutput(outFileWriter))
 	if err != nil {
 		t.Errorf("logger setup error: %s", err.Error())
 	}
-	logger.DefaultLogger = logger.DefaultLogger.Fields(map[string]interface{}{
+	go_logger.DefaultLogger = go_logger.DefaultLogger.Fields(map[string]interface{}{
 		"x-request-id": "123456abc",
 	})
-	fmt.Println(logger.DefaultLogger)
-	logger.DefaultLogger.Log(logger.InfoLevel, "hello")
+	fmt.Println(go_logger.DefaultLogger)
+	go_logger.DefaultLogger.Log(go_logger.InfoLevel, "hello")
 }

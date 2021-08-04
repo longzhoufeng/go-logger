@@ -3,25 +3,24 @@ package zap
 import (
 	"context"
 	"fmt"
+	"github.com/longzhoufeng/go-logger"
 	"io"
 	"os"
 	"sync"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-
-	"github.com/longzhoufeng/go-logger/logger"
 )
 
 type zaplog struct {
 	cfg  zap.Config
 	zap  *zap.Logger
-	opts logger.Options
+	opts go_logger.Options
 	sync.RWMutex
 	fields map[string]interface{}
 }
 
-func (l *zaplog) Init(opts ...logger.Option) error {
+func (l *zaplog) Init(opts ...go_logger.Option) error {
 	//var err error
 
 	for _, o := range opts {
@@ -49,7 +48,7 @@ func (l *zaplog) Init(opts ...logger.Option) error {
 
 	// Set log Level if not default
 	zapConfig.Level = zap.NewAtomicLevel()
-	if l.opts.Level != logger.InfoLevel {
+	if l.opts.Level != go_logger.InfoLevel {
 		zapConfig.Level.SetLevel(loggerToZapLevel(l.opts.Level))
 	}
 	zapConfig.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
@@ -84,7 +83,7 @@ func (l *zaplog) Init(opts ...logger.Option) error {
 	return nil
 }
 
-func (l *zaplog) Fields(fields map[string]interface{}) logger.Logger {
+func (l *zaplog) Fields(fields map[string]interface{}) go_logger.Logger {
 	l.Lock()
 	nfields := make(map[string]interface{}, len(l.fields))
 	for k, v := range l.fields {
@@ -110,11 +109,11 @@ func (l *zaplog) Fields(fields map[string]interface{}) logger.Logger {
 	return zl
 }
 
-func (l *zaplog) Error(err error) logger.Logger {
+func (l *zaplog) Error(err error) go_logger.Logger {
 	return l.Fields(map[string]interface{}{"error": err})
 }
 
-func (l *zaplog) Log(level logger.Level, args ...interface{}) {
+func (l *zaplog) Log(level go_logger.Level, args ...interface{}) {
 	l.RLock()
 	data := make([]zap.Field, 0, len(l.fields))
 	for k, v := range l.fields {
@@ -138,7 +137,7 @@ func (l *zaplog) Log(level logger.Level, args ...interface{}) {
 	}
 }
 
-func (l *zaplog) Logf(level logger.Level, format string, args ...interface{}) {
+func (l *zaplog) Logf(level go_logger.Level, format string, args ...interface{}) {
 	l.RLock()
 	data := make([]zap.Field, 0, len(l.fields))
 	for k, v := range l.fields {
@@ -166,15 +165,15 @@ func (l *zaplog) String() string {
 	return "zap"
 }
 
-func (l *zaplog) Options() logger.Options {
+func (l *zaplog) Options() go_logger.Options {
 	return l.opts
 }
 
 // New builds a new logger based on options
-func NewLogger(opts ...logger.Option) (logger.Logger, error) {
+func NewLogger(opts ...go_logger.Option) (go_logger.Logger, error) {
 	// Default options
-	options := logger.Options{
-		Level:   logger.InfoLevel,
+	options := go_logger.Options{
+		Level:   go_logger.InfoLevel,
 		Fields:  make(map[string]interface{}),
 		Out:     os.Stderr,
 		Context: context.Background(),
@@ -188,36 +187,36 @@ func NewLogger(opts ...logger.Option) (logger.Logger, error) {
 	return l, nil
 }
 
-func loggerToZapLevel(level logger.Level) zapcore.Level {
+func loggerToZapLevel(level go_logger.Level) zapcore.Level {
 	switch level {
-	case logger.TraceLevel, logger.DebugLevel:
+	case go_logger.TraceLevel, go_logger.DebugLevel:
 		return zap.DebugLevel
-	case logger.InfoLevel:
+	case go_logger.InfoLevel:
 		return zap.InfoLevel
-	case logger.WarnLevel:
+	case go_logger.WarnLevel:
 		return zap.WarnLevel
-	case logger.ErrorLevel:
+	case go_logger.ErrorLevel:
 		return zap.ErrorLevel
-	case logger.FatalLevel:
+	case go_logger.FatalLevel:
 		return zap.FatalLevel
 	default:
 		return zap.InfoLevel
 	}
 }
 
-func zapToLoggerLevel(level zapcore.Level) logger.Level {
+func zapToLoggerLevel(level zapcore.Level) go_logger.Level {
 	switch level {
 	case zap.DebugLevel:
-		return logger.DebugLevel
+		return go_logger.DebugLevel
 	case zap.InfoLevel:
-		return logger.InfoLevel
+		return go_logger.InfoLevel
 	case zap.WarnLevel:
-		return logger.WarnLevel
+		return go_logger.WarnLevel
 	case zap.ErrorLevel:
-		return logger.ErrorLevel
+		return go_logger.ErrorLevel
 	case zap.FatalLevel:
-		return logger.FatalLevel
+		return go_logger.FatalLevel
 	default:
-		return logger.InfoLevel
+		return go_logger.InfoLevel
 	}
 }

@@ -3,11 +3,10 @@ package logrus
 import (
 	"context"
 	"fmt"
+	"github.com/longzhoufeng/go-logger"
 	"os"
 
 	"github.com/sirupsen/logrus"
-
-	"github.com/longzhoufeng/go-logger/logger"
 )
 
 type entryLogger interface {
@@ -23,7 +22,7 @@ type logrusLogger struct {
 	opts   Options
 }
 
-func (l *logrusLogger) Init(opts ...logger.Option) error {
+func (l *logrusLogger) Init(opts ...go_logger.Option) error {
 	for _, o := range opts {
 		o(&l.opts.Options)
 	}
@@ -81,29 +80,29 @@ func (l *logrusLogger) String() string {
 	return "logrus"
 }
 
-func (l *logrusLogger) Fields(fields map[string]interface{}) logger.Logger {
+func (l *logrusLogger) Fields(fields map[string]interface{}) go_logger.Logger {
 	return &logrusLogger{l.Logger.WithFields(fields), l.opts}
 }
 
-func (l *logrusLogger) Log(level logger.Level, args ...interface{}) {
+func (l *logrusLogger) Log(level go_logger.Level, args ...interface{}) {
 	l.Logger.Log(loggerToLogrusLevel(level), args...)
 }
 
-func (l *logrusLogger) Logf(level logger.Level, format string, args ...interface{}) {
+func (l *logrusLogger) Logf(level go_logger.Level, format string, args ...interface{}) {
 	l.Logger.Logf(loggerToLogrusLevel(level), format, args...)
 }
 
-func (l *logrusLogger) Options() logger.Options {
+func (l *logrusLogger) Options() go_logger.Options {
 	// FIXME: How to return full opts?
 	return l.opts.Options
 }
 
 // New builds a new logger based on options
-func NewLogger(opts ...logger.Option) logger.Logger {
+func NewLogger(opts ...go_logger.Option) go_logger.Logger {
 	// Default options
 	options := Options{
-		Options: logger.Options{
-			Level:   logger.InfoLevel,
+		Options: go_logger.Options{
+			Level:   go_logger.InfoLevel,
 			Fields:  make(map[string]interface{}),
 			Out:     os.Stderr,
 			Context: context.Background(),
@@ -118,40 +117,40 @@ func NewLogger(opts ...logger.Option) logger.Logger {
 	return l
 }
 
-func loggerToLogrusLevel(level logger.Level) logrus.Level {
+func loggerToLogrusLevel(level go_logger.Level) logrus.Level {
 	switch level {
-	case logger.TraceLevel:
+	case go_logger.TraceLevel:
 		return logrus.TraceLevel
-	case logger.DebugLevel:
+	case go_logger.DebugLevel:
 		return logrus.DebugLevel
-	case logger.InfoLevel:
+	case go_logger.InfoLevel:
 		return logrus.InfoLevel
-	case logger.WarnLevel:
+	case go_logger.WarnLevel:
 		return logrus.WarnLevel
-	case logger.ErrorLevel:
+	case go_logger.ErrorLevel:
 		return logrus.ErrorLevel
-	case logger.FatalLevel:
+	case go_logger.FatalLevel:
 		return logrus.FatalLevel
 	default:
 		return logrus.InfoLevel
 	}
 }
 
-func logrusToLoggerLevel(level logrus.Level) logger.Level {
+func logrusToLoggerLevel(level logrus.Level) go_logger.Level {
 	switch level {
 	case logrus.TraceLevel:
-		return logger.TraceLevel
+		return go_logger.TraceLevel
 	case logrus.DebugLevel:
-		return logger.DebugLevel
+		return go_logger.DebugLevel
 	case logrus.InfoLevel:
-		return logger.InfoLevel
+		return go_logger.InfoLevel
 	case logrus.WarnLevel:
-		return logger.WarnLevel
+		return go_logger.WarnLevel
 	case logrus.ErrorLevel:
-		return logger.ErrorLevel
+		return go_logger.ErrorLevel
 	case logrus.FatalLevel:
-		return logger.FatalLevel
+		return go_logger.FatalLevel
 	default:
-		return logger.InfoLevel
+		return go_logger.InfoLevel
 	}
 }

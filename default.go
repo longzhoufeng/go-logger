@@ -1,4 +1,4 @@
-package logger
+package go_logger
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/longzhoufeng/go-logger/logger/debug"
+	"github.com/longzhoufeng/go-logger/debug"
 )
 
 func init() {
